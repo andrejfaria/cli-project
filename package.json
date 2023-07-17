@@ -1,13 +1,15 @@
 {
-  "name": "cli-project",
+  "name": "cli",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "dist/index.js",
   "repository": "git@github.com:andrejfaria/cli-project.git",
   "author": "andrejfaria <ajcf10@gmail.com>",
   "license": "ISC",
   "type": "module",
+  "bin": "dist/index.js",
   "scripts": {
-    "start": "nodemon src/index.ts hello"
+    "start": "nodemon src/index.ts",
+    "build": "npm unlink -g && tsc -p . && npm link"
   },
   "devDependencies": {
     "@types/fs-extra": "^11.0.1",
