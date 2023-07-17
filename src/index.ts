@@ -4,15 +4,10 @@ import inquirer from 'inquirer';
 import path, { join } from 'path';
 import { argv } from 'node:process';
 import { fileURLToPath } from 'url';
-import gitignore from "gitignore"
-import util from 'util';
-import { promisify } from 'util';
 import { promises as fsPromise } from 'fs';
-import { json } from 'stream/consumers';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const wgitignore = promisify(gitignore.writeFile)
 const url = "https://api.github.com/gitignore/templates/Node"
 
 async function getTemplates(): Promise<string | undefined> {
@@ -36,8 +31,10 @@ async function main() {
   if (!argv[2]) {
     targetdir = process.cwd();
   }
-  targetdir = argv[2];
+  targetdir = argv[2]
 
+  const destination = path.join(process.cwd().toString(), targetdir);
+  // console.log(destination, "------------DESTINATION")
   const tempDir = path.join(__dirname, "./templates");
 
   const { project } = await inquirer.prompt([
@@ -49,7 +46,7 @@ async function main() {
 
   const projectDir = join(tempDir, project);
 
-  await fse.copy(projectDir, project);
+  await fse.copy(projectDir, destination);
   // const gwrite = util.promisify(());
 
   const content = await getTemplates()
