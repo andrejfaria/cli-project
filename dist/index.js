@@ -14,11 +14,10 @@ async function getTemplates() {
         if (!response.ok) {
             throw new Error(`HTTP error: ${response.status}`);
         }
-        const data = await response.json();
-        return new Promise(data);
+        return response;
     }
     catch (error) {
-        console.error(`Could not get products: ${error}`);
+        console.error(`Could not get template: ${error}`);
     }
     return undefined;
 }
@@ -33,7 +32,7 @@ async function main() {
     const { project } = await inquirer.prompt([
         {
             type: "list",
-            name: "project",
+            name: "Choose a project :",
             choices: await fse.readdir(path.join(tempDir)),
         }
     ]);
@@ -46,9 +45,10 @@ async function main() {
         console.log("sucessfully copied");
     });
     const content = await getTemplates();
+    let res = await (content === null || content === void 0 ? void 0 : content.json());
+    console.log(res);
     if (content) {
-        console.log("content------------------------<>", content);
-        await fsPromise.writeFile(path.join(destination, ".gitignore"), content);
+        await fsPromise.writeFile(path.join(destination, ".gitignore"), res.source);
     }
     const targetPackage = path.join(destination, "package.json");
     let packageContent = JSON.parse(fse.readFileSync(targetPackage).toString());

@@ -7,18 +7,18 @@ import { fileURLToPath } from 'url';
 import { promises as fsPromise } from 'fs';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const url = "https://api.github.com/gitignore/templates/Node"
+const url = "https://api.github.com/gitignore/templates/Node";
 
-async function getTemplates(): Promise<string | undefined> {
+async function getTemplates() {
   try {
     const response = await fetch(url);
     if (!response.ok) {
       throw new Error(`HTTP error: ${response.status}`);
     }
-    const data = await response.json();
-    return data.source;
+    // const data: Promise<string> = await response.json();
+    return response;
   } catch (error) {
-    console.error(`Could not get products: ${error}`);
+    console.error(`Could not get template: ${error}`);
   }
   return undefined;
 }
@@ -30,19 +30,19 @@ async function main() {
     targetdir = process.cwd();
   }
   targetdir = argv[2]
-  console.log("targetdir------------------------", targetdir)
+  // console.log("targetdir------------------------", targetdir)
 
   const destination = path.join(process.cwd().toString(), targetdir);
-  console.log("targetdir------------------------", targetdir)
+  // console.log("targetdir------------------------", targetdir)
 
   const tempDir = path.join(__dirname, ".././src", "./templates");
-  console.log("tempDir------------------------", tempDir)
+  // console.log("tempDir------------------------", tempDir)
 
 
   const { project } = await inquirer.prompt([
     {
       type: "list",
-      name: "project",
+      name: "Choose a project ",
       choices: await fse.readdir(path.join(tempDir)),
     }])
 
@@ -57,8 +57,12 @@ async function main() {
 
 
   const content = await getTemplates();
+  let res = await content?.json();
+  console.log(res)
+
+
   if (content) {
-    await fsPromise.writeFile(path.join(destination, ".gitignore"), content);
+    await fsPromise.writeFile(path.join(destination, ".gitignore"), res.source)
   }
 
   const targetPackage = path.join(destination, "package.json");
